@@ -5,6 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+
 
 @Entity
 public class UserModel {
@@ -13,16 +18,22 @@ public class UserModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column
+    @Column(nullable = false)
+    @NotBlank(message = "First name cannot be null or empty")
     private String firstName;
 
-    @Column
+    @Column(nullable = false)
+    @NotBlank(message = "Last name cannot be null or empty")
     private String lastName;
 
-    @Column
+    @Column(nullable = false, unique = true)
+    @Email
+    @NotBlank(message = "Email cannot be null or empty")
     private String email;
 
-    @Column
+    @Column(nullable = false)
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @NotBlank(message = "Password cannot be null or empty")
     private String password;
 
     public long getId() {
@@ -38,7 +49,7 @@ public class UserModel {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = firstName != null ? firstName.trim() : null;
     }
 
     public String getLastName() {
@@ -46,7 +57,7 @@ public class UserModel {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = lastName != null ? lastName.trim() : null;
     }
 
     public String getEmail() {
@@ -54,7 +65,7 @@ public class UserModel {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email != null ? email.trim() : null;
     }
 
     public String getPassword() {
@@ -62,6 +73,6 @@ public class UserModel {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password != null ? password.trim() : null;
     }
 }
