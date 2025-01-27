@@ -1,6 +1,7 @@
 package com.example.notice.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,5 +31,18 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         userRepository.save(user);
+    }
+
+    public boolean authenticate(String email, String password) {
+
+        Optional<UserModel> userOptional = userRepository.findByEmail(email);
+        
+        if (userOptional.isPresent()) {
+            UserModel user = userOptional.get();
+            
+            return passwordEncoder.matches(password, user.getPassword());
+        }
+        
+        return false;
     }
 }
