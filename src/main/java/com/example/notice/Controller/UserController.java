@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.notice.Model.UserModel;
+import com.example.notice.Service.JwtService;
 import com.example.notice.Service.UserService;
 
 import jakarta.validation.Valid;
@@ -23,6 +24,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtService jwtService;
+
     @GetMapping(value = "/users")
     public List<UserModel> getUsers(){
         return userService.getAllUsers();
@@ -32,7 +36,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody UserModel user, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
 
-        // Check for validation errors
+    
         if (result.hasErrors()) {
             Map<String, String> validationErrors = new HashMap<>();
             result.getFieldErrors().forEach(error -> validationErrors.put(error.getField(), error.getDefaultMessage()));
@@ -44,8 +48,10 @@ public class UserController {
 
         try {
             userService.registerUser(user);
+            String token = jwtService.generateToken(user.getEmail());
             response.put("status", "success");
             response.put("message", "User added successfully");
+            response.put("token", token);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
