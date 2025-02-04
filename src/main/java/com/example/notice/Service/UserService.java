@@ -45,4 +45,23 @@ public class UserService {
         
         return false;
     }
+
+    public UserModel getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public void deleteUserByEmail(String email) {
+        UserModel user = userRepository.findByEmail(email).orElse(null);
+        
+        if (user != null) {
+            userRepository.delete(user);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+    public void saveUser(UserModel user) {
+        userRepository.save(user);
+    }
+    
 }
