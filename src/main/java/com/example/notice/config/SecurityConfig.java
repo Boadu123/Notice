@@ -32,9 +32,6 @@ public class SecurityConfig {
                 .requestMatchers("/login").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
-
-    
 }
