@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 
 @RestController
 public class UserController {
-    
+
     @Autowired
     private UserService userService;
 
@@ -33,11 +33,12 @@ public class UserController {
     private JwtService jwtService;
 
     @GetMapping(value = "/users")
-    public ResponseEntity<Map<String, Object>> getUsers(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+    public ResponseEntity<Map<String, Object>> getUsers(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            
+
             List<UserModel> users = userService.getAllUsers();
 
             if (users.isEmpty()) {
@@ -74,7 +75,7 @@ public class UserController {
 
         try {
             userService.registerUser(user);
-            String token = jwtService.generateToken(user.getEmail());
+            String token = jwtService.generateToken(user.getEmail(), user.getId());
             response.put("status", "success");
             response.put("message", "User added successfully");
             response.put("token", token);
@@ -91,12 +92,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody UserModel userModel) {
         Map<String, Object> response = new HashMap<>();
-        
+
         boolean isAuthenticated = userService.authenticate(userModel.getEmail(), userModel.getPassword());
-        
+
         if (isAuthenticated) {
-            String token = jwtService.generateToken(userModel.getEmail());
-            
+            String token = jwtService.generateToken(userModel.getEmail(), userModel.getId());
+
             response.put("status", "success");
             response.put("token", token);
             return ResponseEntity.ok(response);
@@ -108,7 +109,8 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Map<String, Object>> getLoggedInUserDetails(@RequestHeader(value = "Authorization", required = true) String authHeader) {
+    public ResponseEntity<Map<String, Object>> getLoggedInUserDetails(
+            @RequestHeader(value = "Authorization", required = true) String authHeader) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -152,7 +154,8 @@ public class UserController {
     }
 
     @DeleteMapping("/user")
-    public ResponseEntity<Map<String, Object>> deleteUser(@RequestHeader(value = "Authorization", required = true) String authHeader) {
+    public ResponseEntity<Map<String, Object>> deleteUser(
+            @RequestHeader(value = "Authorization", required = true) String authHeader) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -201,7 +204,9 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    public ResponseEntity<Map<String, Object>> updateUser(@RequestHeader(value = "Authorization", required = true) String authHeader, @RequestBody UserModel updatedUser) {
+    public ResponseEntity<Map<String, Object>> updateUser(
+            @RequestHeader(value = "Authorization", required = true) String authHeader,
+            @RequestBody UserModel updatedUser) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -265,7 +270,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
-
 
 }

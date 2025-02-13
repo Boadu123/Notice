@@ -45,7 +45,7 @@ public class UserModel {
     private String password;
 
     @JsonIgnore
-    @OneToMany(mappedBy ="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NoticeModel> notice;
 
-    }
+}

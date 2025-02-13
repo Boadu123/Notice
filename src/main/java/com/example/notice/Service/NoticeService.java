@@ -18,4 +18,8 @@ public class NoticeService {
     public List<NoticeModel> getAllNotices() {
         return noticeRepository.findAll();
     }
+
+    public NoticeModel createNotice(NoticeModel noticeModel) {
+        return noticeRepository.save(noticeModel);
+    }
 }

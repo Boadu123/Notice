@@ -7,5 +7,5 @@ import com.example.notice.Model.NoticeModel;
 
 @Repository
 public interface NoticeRepository extends JpaRepository<NoticeModel, Long> {
-    
+
 }
