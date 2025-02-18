@@ -22,6 +22,7 @@ import com.example.notice.Service.JwtService;
 import com.example.notice.Service.NoticeService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -133,5 +134,42 @@ public class NoticeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @GetMapping(value = "/notice/{id}")
+    public ResponseEntity<Map<String, Object>> getProductById(@PathVariable("id") Long noticeId) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            // If user is not authenticated
+            if (authentication == null || authentication.getPrincipal() == "anonymousUser") {
+                response.put("status", "error");
+                response.put("message", "User not authenticated");
+                return ResponseEntity.status(401).body(response);
+            }
+
+            // Retrieve the product by ID
+            Optional<NoticeModel> notice = noticeService.getNoticeById(noticeId);
+
+            if (notice.isEmpty()) {
+                response.put("status", "error");
+                response.put("message", "Product not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            response.put("status", "success");
+            response.put("message", "Product found.");
+            response.put("details", notice.get());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "An error occurred while fetching the product.");
+            response.put("details", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 }

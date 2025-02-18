@@ -1,6 +1,7 @@
 package com.example.notice.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -21,5 +22,9 @@ public class NoticeService {
 
     public NoticeModel createNotice(NoticeModel noticeModel) {
         return noticeRepository.save(noticeModel);
+    }
+
+    public Optional<NoticeModel> getNoticeById(Long id) {
+        return noticeRepository.findById(id);
     }
 }
