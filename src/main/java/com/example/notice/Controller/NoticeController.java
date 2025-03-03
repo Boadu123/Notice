@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 public class NoticeController {
@@ -136,7 +138,7 @@ public class NoticeController {
     }
 
     @GetMapping(value = "/notice/{id}")
-    public ResponseEntity<Map<String, Object>> getProductById(@PathVariable("id") Long noticeId) {
+    public ResponseEntity<Map<String, Object>> getNoticeById(@PathVariable("id") Long noticeId) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -166,6 +168,55 @@ public class NoticeController {
         } catch (Exception e) {
             response.put("status", "error");
             response.put("message", "An error occurred while fetching the product.");
+            response.put("details", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PutMapping("notice/{id}")
+    public ResponseEntity<Map<String, Object>> updateNoticeById(@PathVariable("id") Long noticeId, @RequestBody NoticeModel updatedNotice) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    
+            // If user is not authenticated
+            if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+                response.put("status", "error");
+                response.put("message", "User not authenticated");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+    
+            // Retrieve the existing notice
+            Optional<NoticeModel> existingNotice = noticeService.getNoticeById(noticeId);
+    
+            if (existingNotice.isEmpty()) {
+                response.put("status", "error");
+                response.put("message", "Notice not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+    
+            // Update fields (only update non-null values)
+            NoticeModel noticeToUpdate = existingNotice.get();
+    
+            if (updatedNotice.getTitle() != null) {
+                noticeToUpdate.setTitle(updatedNotice.getTitle());
+            }
+            if (updatedNotice.getDescription() != null) {
+                noticeToUpdate.setDescription(updatedNotice.getDescription());
+            }
+    
+            // Save updated notice
+            NoticeModel savedNotice = noticeService.updateNotice(noticeToUpdate);
+    
+            response.put("status", "success");
+            response.put("message", "Notice updated successfully.");
+            response.put("updatedNotice", savedNotice);
+            return ResponseEntity.ok(response);
+    
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "An error occurred while updating the notice.");
             response.put("details", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

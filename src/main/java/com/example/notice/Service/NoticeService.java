@@ -27,4 +27,8 @@ public class NoticeService {
     public Optional<NoticeModel> getNoticeById(Long id) {
         return noticeRepository.findById(id);
     }
+
+    public NoticeModel updateNotice(NoticeModel noticeToUpdate) {
+        return noticeRepository.save(noticeToUpdate);
+    }
 }
