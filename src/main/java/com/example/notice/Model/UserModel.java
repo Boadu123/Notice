@@ -40,7 +40,6 @@ public class UserModel {
     private String email;
 
     @Column(nullable = false)
-    @JsonIgnore
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @NotBlank(message = "Password cannot be null or empty")
     private String password;
